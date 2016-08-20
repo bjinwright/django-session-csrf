@@ -52,7 +52,7 @@ class CsrfMiddleware(MiddlewareMixin):
             return
         if request.user.is_authenticated():
             if 'csrf_token' not in request.session:
-                token = django_csrf._get_new_csrf_key()
+                token = django_csrf._get_new_csrf_string()
                 request.csrf_token = request.session['csrf_token'] = token
             else:
                 request.csrf_token = request.session['csrf_token']
@@ -64,9 +64,9 @@ class CsrfMiddleware(MiddlewareMixin):
                 token = cache.get(prep_key(key), '')
             if ANON_ALWAYS:
                 if not key:
-                    key = django_csrf._get_new_csrf_key()
+                    key = django_csrf._get_new_csrf_string()
                 if not token:
-                    token = django_csrf._get_new_csrf_key()
+                    token = django_csrf._get_new_csrf_string()
                 request._anon_csrf_key = key
                 cache.set(prep_key(key), token, ANON_TIMEOUT)
             request.csrf_token = token
@@ -129,10 +129,10 @@ def anonymous_csrf(f):
         if use_anon_cookie:
             if ANON_COOKIE in request.COOKIES:
                 key = request.COOKIES[ANON_COOKIE]
-                token = cache.get(prep_key(key)) or django_csrf._get_new_csrf_key()
+                token = cache.get(prep_key(key)) or django_csrf._get_new_csrf_string()
             else:
-                key = django_csrf._get_new_csrf_key()
-                token = django_csrf._get_new_csrf_key()
+                key = django_csrf._get_new_csrf_string()
+                token = django_csrf._get_new_csrf_string()
             cache.set(prep_key(key), token, ANON_TIMEOUT)
             request.csrf_token = token
         response = f(request, *args, **kw)
