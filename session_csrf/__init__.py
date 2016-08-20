@@ -33,7 +33,11 @@ def prep_key(key):
     return hashlib.md5(prefixed).hexdigest()
 
 class CsrfMiddleware(object):
-
+    
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+        super(MiddlewareMixin, self).__init__()
+    
     # csrf_processing_done prevents checking CSRF more than once. That could
     # happen if the requires_csrf_token decorator is used.
     def _accept(self, request):
